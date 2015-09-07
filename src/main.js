@@ -44,7 +44,7 @@ window.rAF = (function() {
         for(i = 2; i < 26; i++) {
             generatePlatform(i);
         }
-        ctx.font = "18px Arial";
+        ctx.font = "18px Courier New";
         //Calling the main loop
         loop();
     }
