@@ -23,6 +23,8 @@ window.rAF = (function() {
             y: 32,
             vx: 0,
             vy: 0,
+            hp: 3,
+            fr: 1,
             fd: {
                 x: 0,
                 y: 0
@@ -42,6 +44,7 @@ window.rAF = (function() {
         for(i = 2; i < 26; i++) {
             generatePlatform(i);
         }
+        ctx.font = "18px Arial";
         //Calling the main loop
         loop();
     }
@@ -114,15 +117,13 @@ window.rAF = (function() {
             player.vy -= 1;
         }
 
-        if(player.x >= 500) {
+        if(player.x > 500) {
             worldOffsetX += player.x - 500;
             player.x = 500;
-            if(worldOffsetX > 32) {
+            if(worldOffsetX >= 32) {
                 worldOffsetX %= 32;
-                for(var i = 0; i < world.length - 1; i++) {
-                    world[i] = world[i+1];
-                }
-                generatePlatform(world.length - 1);
+                world.shift();
+                generatePlatform(world.length);
             }
         }
 
@@ -137,6 +138,14 @@ window.rAF = (function() {
             ctx.fillRect(32*i-worldOffsetX, 0, 32, world[i]);
         }
         player.render();
+
+        //UI rendering
+        ctx.fillStyle = '#FFF';
+        ctx.fillText("HP:", 700, 314);
+        for(i = 0; i < player.hp; i++) {
+            ctx.fillRect(740+20*i, 300, 16, 16);
+        }
+        ctx.fillText("Fire ratio: " + player.fr, 5, 314);
     }
 
     //For generating the map
