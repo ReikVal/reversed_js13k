@@ -14,6 +14,7 @@ window.rAF = (function() {
         ctx           = canvas.getContext('2d'),
         keyPressed    = {},
         world         = [],
+        worldOffsetX  = 0,
         currentHeight = 0,
         dist          = [0, 1],
         keysForUse    = [65, 68, 32, 37, 38, 39, 40],
@@ -41,7 +42,6 @@ window.rAF = (function() {
         for(i = 2; i < 26; i++) {
             generatePlatform(i);
         }
-        console.log(world);
         //Calling the main loop
         loop();
     }
@@ -89,27 +89,41 @@ window.rAF = (function() {
 
     function update() {
         if(player.vx > 0) {
-            if(player.y >= world[Math.floor((16+player.x+player.vx)/32)]) {
+            if(player.y >= world[Math.floor((16+player.x+player.vx+worldOffsetX)/32)]) {
                 player.x += player.vx;
             } else {
-                player.x = 32 * Math.floor((16+player.x+player.vx)/32) - 17;
+                player.x = 32 * Math.floor((16+player.x+player.vx+worldOffsetX)/32) - worldOffsetX - 17;
             }
         } else if(player.vx < 0) {
-            if(player.y >= world[Math.floor((player.x+player.vx)/32)]) {
+            if(player.x + player.vx < 0) {
+                player.x = 0;
+            } else if(player.y >= world[Math.floor((player.x+player.vx+worldOffsetX)/32)]) {
                 player.x += player.vx;
             } else {
-                player.x = 32*(Math.floor((player.x+player.vx)/32)+1);
+                player.x = 32*Math.floor((player.x+player.vx+worldOffsetX)/32+1)-worldOffsetX;
             }
         }
 
 
-        if(player.y + player.vy < Math.max(world[Math.floor(player.x/32)], world[Math.floor((16+player.x)/32)])) {
-            player.y = Math.max(world[Math.floor(player.x/32)], world[Math.floor((16+player.x)/32)]);
+        if(player.y + player.vy < Math.max(world[Math.floor((player.x+worldOffsetX)/32)], world[Math.floor((16+player.x+worldOffsetX)/32)])) {
+            player.y = Math.max(world[Math.floor((player.x+worldOffsetX)/32)], world[Math.floor((16+player.x+worldOffsetX)/32)]);
             player.vy = 0;
             player.jumping = false;
         } else {
             player.y += player.vy;
             player.vy -= 1;
+        }
+
+        if(player.x >= 500) {
+            worldOffsetX += player.x - 500;
+            player.x = 500;
+            if(worldOffsetX > 32) {
+                worldOffsetX %= 32;
+                for(var i = 0; i < world.length - 1; i++) {
+                    world[i] = world[i+1];
+                }
+                generatePlatform(world.length - 1);
+            }
         }
 
     }
@@ -120,7 +134,7 @@ window.rAF = (function() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#FFF';
         for(i = 0; i < l; i++) {
-            ctx.fillRect(32*i, 0, 32, world[i]);
+            ctx.fillRect(32*i-worldOffsetX, 0, 32, world[i]);
         }
         player.render();
     }
