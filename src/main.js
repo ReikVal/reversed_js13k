@@ -141,11 +141,11 @@ window.rAF = (function() {
 
         //UI rendering
         ctx.fillStyle = '#FFF';
-        ctx.fillText("HP:", 700, 314);
+        ctx.fillText('HP:', 700, 314);
         for(i = 0; i < player.hp; i++) {
             ctx.fillRect(740+20*i, 300, 16, 16);
         }
-        ctx.fillText("Fire ratio: " + player.fr, 5, 314);
+        ctx.fillText('Fire ratio: ' + player.fr, 5, 314);
     }
 
     //For generating the map
