@@ -151,7 +151,7 @@ window.rAF = (function() {
         }
 
         //Fire generation
-        if(player.fd.x + player.fd.y !== 0 && fireAllowed) {
+        if(fireAllowed && (player.fd.x !== 0 || player.fd.y !== 0)) {
             fireAllowed = false;
             vel = Math.sqrt(player.fd.x*player.fd.x + player.fd.y*player.fd.y);
             for(i = 0, l = bullets.length; i < l && !generated; i++) {
