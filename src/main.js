@@ -16,7 +16,10 @@ window.rAF = (function() {
         world         = [],
         worldOffsetX  = 0,
         currentHeight = 0,
+        fireCount     = 0,
         dist          = [0, 1],
+        fireAllowed   = true,
+        bullets       = [],
         keysForUse    = [65, 68, 32, 37, 38, 39, 40],
         player        = {
             x: 0,
@@ -24,7 +27,7 @@ window.rAF = (function() {
             vx: 0,
             vy: 0,
             hp: 3,
-            fr: 1,
+            fr: 3,
             fd: {
                 x: 0,
                 y: 0
@@ -91,6 +94,10 @@ window.rAF = (function() {
     }
 
     function update() {
+        var i         = 0,
+            l         = 0,
+            generated = false,
+            vel       = 0;
         if(player.vx > 0) {
             if(player.y >= world[Math.floor((16+player.x+player.vx+worldOffsetX)/32)]) {
                 player.x += player.vx;
@@ -107,7 +114,6 @@ window.rAF = (function() {
             }
         }
 
-
         if(player.y + player.vy < Math.max(world[Math.floor((player.x+worldOffsetX)/32)], world[Math.floor((16+player.x+worldOffsetX)/32)])) {
             player.y = Math.max(world[Math.floor((player.x+worldOffsetX)/32)], world[Math.floor((16+player.x+worldOffsetX)/32)]);
             player.vy = 0;
@@ -117,6 +123,7 @@ window.rAF = (function() {
             player.vy -= 1;
         }
 
+        //Generating map and scrolling.
         if(player.x > 500) {
             worldOffsetX += player.x - 500;
             player.x = 500;
@@ -124,6 +131,47 @@ window.rAF = (function() {
                 worldOffsetX %= 32;
                 world.shift();
                 generatePlatform(world.length);
+            }
+        }
+
+        //Fire update
+        for(i = 0, l = bullets.length; i < l; i++) {
+            if(bullets[i].alive) {
+                bullets[i].x += bullets[i].vx;
+                bullets[i].y += bullets[i].vy;
+                bullets[i].alive = bullets[i].x >= 0 && bullets[i].x <= canvas.width && bullets[i].y >= 0 && bullets[i].y <= canvas.height;
+            }
+        }
+
+        if(!fireAllowed) {
+            fireCount = (fireCount + 1)%(60/player.fr);
+            if(!fireCount) {
+                fireAllowed = true;
+            }
+        }
+
+        //Fire generation
+        if(player.fd.x + player.fd.y !== 0 && fireAllowed) {
+            fireAllowed = false;
+            vel = Math.sqrt(player.fd.x*player.fd.x + player.fd.y*player.fd.y);
+            for(i = 0, l = bullets.length; i < l && !generated; i++) {
+                if(!bullets[i].alive) {
+                    generated = true;
+                    bullets[i].x = player.x + 8;
+                    bullets[i].y = player.y + 8;
+                    bullets[i].vx = 5 * player.fd.x * vel;
+                    bullets[i].vy = 5 * player.fd.y * vel;
+                    bullets[i].alive = true;
+                }
+            }
+            if(!generated) {
+                bullets.push({
+                    x: player.x + 8,
+                    y: player.y + 8,
+                    vx: 5 * player.fd.x * vel,
+                    vy: 5 * player.fd.y * vel,
+                    alive: true
+                });
             }
         }
 
@@ -138,6 +186,14 @@ window.rAF = (function() {
             ctx.fillRect(32*i-worldOffsetX, 0, 32, world[i]);
         }
         player.render();
+
+        //Bullets rendering
+        ctx.fillStyle = '#A00';
+        for(i = 0, l = bullets.length; i < l; i++) {
+            if(bullets[i].alive) {
+                ctx.fillRect(bullets[i].x - 2, bullets[i].y - 1, 5, 5);
+            }
+        }
 
         //UI rendering
         ctx.fillStyle = '#FFF';
