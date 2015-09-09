@@ -178,22 +178,24 @@ window.rAF = (function() {
     }
     function render() {
         var i = 0,
-            l = world.length;
+            l = bullets.length;
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#FFF';
-        for(i = 0; i < l; i++) {
-            ctx.fillRect(32*i-worldOffsetX, 0, 32, world[i]);
-        }
-        player.render();
 
         //Bullets rendering
         ctx.fillStyle = '#A00';
-        for(i = 0, l = bullets.length; i < l; i++) {
+        for(i = 0; i < l; i++) {
             if(bullets[i].alive) {
                 ctx.fillRect(bullets[i].x - 2, bullets[i].y - 1, 5, 5);
             }
         }
+        
+        //World rendering
+        ctx.fillStyle = '#FFF';
+        for(i = 0, l = world.length; i < l; i++) {
+            ctx.fillRect(32*i-worldOffsetX, 0, 32, world[i]);
+        }
+        player.render();
 
         //UI rendering
         ctx.fillStyle = '#FFF';
