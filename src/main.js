@@ -153,7 +153,7 @@ window.rAF = (function() {
         //Fire generation
         if(fireAllowed && (player.fd.x !== 0 || player.fd.y !== 0)) {
             fireAllowed = false;
-            vel = Math.sqrt(player.fd.x*player.fd.x + player.fd.y*player.fd.y);
+            vel = 1/Math.sqrt(player.fd.x*player.fd.x + player.fd.y*player.fd.y);
             for(i = 0, l = bullets.length; i < l && !generated; i++) {
                 if(!bullets[i].alive) {
                     generated = true;
