@@ -20,6 +20,10 @@ window.rAF = (function() {
         dist          = [0, 1],
         fireAllowed   = true,
         bullets       = [],
+        enemies       = [],
+        enemyRate     = 1,
+        enemyCount    = 0,
+        animation     = 0,
         keysForUse    = [65, 68, 32, 37, 38, 39, 40],
         player        = {
             x: 0,
@@ -96,6 +100,7 @@ window.rAF = (function() {
     function update() {
         var i         = 0,
             l         = 0,
+            M         = 0,
             generated = false,
             vel       = 0;
         if(player.vx > 0) {
@@ -175,6 +180,33 @@ window.rAF = (function() {
             }
         }
 
+        //Generating enemies
+        enemyCount++;
+        if(enemyCount%Math.floor(300/enemyRate) === 0) {
+            enemyCount = 0;
+            M = Math.max.apply(null, world);
+            for(i = 0, l = enemies.length, generated = false; i < l && !generated; i++) {
+                if(!enemies[i].alive) {
+                    enemies[i].x = 500;
+                    enemies[i].y = (308 - M) * Math.random() + M + 8;
+                    enemies[i].alive = true;
+                }
+            }
+            if(!generated) {
+                enemies.push({
+                    x: 500,
+                    y: (320 - M) * Math.random() + M + 8,
+                    v: Math.random() * 5,
+                    alive: true
+                });
+            }
+        }
+
+        //Enemies update
+        for(i = 0, l = enemies.length; i < l; i++) {
+
+        }
+
     }
     function render() {
         var i = 0,
@@ -183,19 +215,37 @@ window.rAF = (function() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         //Bullets rendering
-        ctx.fillStyle = '#A00';
+        ctx.fillStyle = '#FF0';
         for(i = 0; i < l; i++) {
             if(bullets[i].alive) {
                 ctx.fillRect(bullets[i].x - 2, bullets[i].y - 1, 5, 5);
             }
         }
-        
+
         //World rendering
         ctx.fillStyle = '#FFF';
         for(i = 0, l = world.length; i < l; i++) {
             ctx.fillRect(32*i-worldOffsetX, 0, 32, world[i]);
         }
+
+        //Player and enemy rendering
         player.render();
+        if(++animation === 10) {
+            animation = 0;
+        }
+        for(i = 0, l = enemies.length; i < l; i++) {
+            if(enemies[i].alive) {
+                ctx.fillStyle = '#F33';
+                ctx.beginPath();
+                ctx.moveTo(enemies[i].x, enemies[i].y);
+                ctx.lineTo(enemies[i].x + 16, enemies[i].y + 8);
+                ctx.lineTo(enemies[i].x + 16, enemies[i].y - 8);
+                ctx.fill();
+                ctx.fillStyle = '#FF0';
+                ctx.fillRect(enemies[i].x+16, enemies[i].y-8, Math.abs(10-animation)%5, 4);
+                ctx.fillRect(enemies[i].x+16, enemies[i].y+4, Math.abs(10-animation)%5, 4);
+            }
+        }
 
         //UI rendering
         ctx.fillStyle = '#FFF';
