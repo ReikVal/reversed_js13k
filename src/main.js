@@ -187,16 +187,18 @@ window.rAF = (function() {
             M = Math.max.apply(null, world);
             for(i = 0, l = enemies.length, generated = false; i < l && !generated; i++) {
                 if(!enemies[i].alive) {
-                    enemies[i].x = 500;
+                    enemies[i].x = 800;
                     enemies[i].y = (308 - M) * Math.random() + M + 8;
+                    enemies[i].v = 1 + Math.random() * 5;
                     enemies[i].alive = true;
+                    generated = true;
                 }
             }
             if(!generated) {
                 enemies.push({
-                    x: 500,
+                    x: 800,
                     y: (320 - M) * Math.random() + M + 8,
-                    v: Math.random() * 5,
+                    v: 1 + Math.random() * 5,
                     alive: true
                 });
             }
@@ -204,7 +206,13 @@ window.rAF = (function() {
 
         //Enemies update
         for(i = 0, l = enemies.length; i < l; i++) {
-
+            if(enemies[i].alive) {
+                enemies[i].x -= enemies[i].v;
+                //Check if he is dead
+                if(enemies[i].x < - 16) {
+                    enemies[i].alive = false;
+                }
+            }
         }
 
     }
