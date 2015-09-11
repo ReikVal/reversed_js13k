@@ -37,6 +37,8 @@ window.rAF = (function() {
                 y: 0
             },
             jumping: false,
+            immunity: false,
+            immunityCount: 0,
             render: function() {
                 ctx.fillStyle = '#00C';
                 ctx.fillRect(this.x, this.y, 16, 16);
@@ -100,9 +102,39 @@ window.rAF = (function() {
     function update() {
         var i         = 0,
             l         = 0,
+            j         = 0,
+            m         = 0,
             M         = 0,
             generated = false,
             vel       = 0;
+
+        //Check collisions
+        if(player.immunity) {
+            ++player.immunityCount;
+            if(player.immunityCount == 120) {
+                player.immunityCount = 0;
+                player.immunity = false;
+            }
+        }
+
+        for(i = 0, l = enemies.length; i < l; i++) {
+            if(enemies[i].alive){
+                if(Math.abs(enemies[i].x - player.x) <= 16 && Math.abs(enemies[i].y - player.y) <= 16 && !player.immunity) {
+                    player.immunity = true;
+                    player.hp--;
+                    enemies[i].alive = false;
+                }
+
+                for(j = 0, m = bullets.length; j < m; j++) {
+                    if(Math.abs(enemies[i].x + 8 - bullets[j].x) <= 16 && Math.abs(enemies[i].y + 4 - bullets[j].y) <= 16) {
+                        enemies[i].alive = false;
+                        bullets[j].alive = false;
+                    }
+                }
+            }
+        }
+
+        //Player update
         if(player.vx > 0) {
             if(player.y >= world[Math.floor((16+player.x+player.vx+worldOffsetX)/32)]) {
                 player.x += player.vx;
