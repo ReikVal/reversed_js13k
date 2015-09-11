@@ -22,8 +22,8 @@ window.rAF = (function() {
         bullets       = [],
         enemies       = [],
         enemyBullets  = [],
-        distance      = 10000,
-        score         = 9,
+        distance      = 0,
+        score         = 0,
         enemyRate     = 1,
         enemyCount    = 0,
         animation     = 0,
@@ -368,7 +368,7 @@ window.rAF = (function() {
         ctx.fillText('Distance:   ' + Math.floor(distance/10), 5, 300);
         ctx.fillText('Kills:      ' + score, 5, 286);
         if(player.immunity && animation % 10 !== 0) {
-            ctx.fillText('IMMUNE', 700, 300);
+            ctx.fillText('IMMUNE', 700, 284);
         }
     }
 
