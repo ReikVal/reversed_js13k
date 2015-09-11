@@ -173,7 +173,7 @@ window.rAF = (function() {
             if(Math.abs(player.x + 8 - enemyBullets[j].x) <= 8 && Math.abs(player.y + 8 - enemyBullets[j].y) <= 8 && !player.imaamunity) {
                 player.immunity = true;
                 player.hp--;
-                enemyBullets[i].alive = false;
+                enemyBullets[j].alive = false;
             }
         }
 
