@@ -12,11 +12,11 @@ window.rAF = (function() {
 
     var canvas        = document.getElementById('game'),
         ctx           = canvas.getContext('2d'),
-        currentState  = 0,
+        currentState  = 9,
         menu          = ['Play', 'Instructions', 'Story'],
         menuSelected  = 0,
-        timerMenu     = 0,
         menuTimer     = 0,
+        allowPress    = true,
         keyPressed    = {},
         world         = [],
         worldOffsetX  = 0,
@@ -45,7 +45,7 @@ window.rAF = (function() {
                 y: 0
             },
             jumping: false,
-            immunity: false,
+            immunity: true,
             immunityCount: 0,
             render: function() {
                 ctx.fillStyle = '#00C';
@@ -54,14 +54,8 @@ window.rAF = (function() {
         };
 
     function init() {
-        var i;
         //Generating the world
-        world[0] = 32;
-        world[1] = 32;
-        for(i = 2; i < 26; i++) {
-            generatePlatform(i);
-        }
-        ctx.font = '18px Courier New';
+        generateWorld();
         //Calling the main loop
         loop();
     }
@@ -86,6 +80,7 @@ window.rAF = (function() {
                 break;
             case 9:
                 //Game Over State
+                gameOverUpdateAndRender();
         }
         window.rAF(loop);
     }
@@ -200,6 +195,12 @@ window.rAF = (function() {
                 player.hp--;
                 enemyBullets[j].alive = false;
             }
+        }
+
+        //Check defeat condition
+        if(player.hp === 0) {
+            currentState = 9;
+            allowPress = false;
         }
 
         //Player update
@@ -397,6 +398,27 @@ window.rAF = (function() {
     function menuUpdateAndRender() {
         var i = 0,
             l = menu.length;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFF';
+        ctx.font = '50px Courier New';
+        ctx.fillText('Hsur', 20, 60);
+        ctx.font = '25px Courier New';
+        for(i = 0; i < l; i++) {
+            if(menuSelected === i) {
+                ctx.fillStyle = '#00C';
+                ctx.fillRect(20, 114 + i*30, 16, 16);
+                ctx.fillStyle = '#FF0';
+            } else {
+                ctx.fillStyle = '#FFF';
+            }
+            ctx.fillText(menu[i], 50, 130 + i*30);
+        }
+        ctx.fillStyle = '#FFF';
+        ctx.font = '18px Courier New';
+        ctx.fillText('Press "W/S" to change options', 450, 260);
+        ctx.fillText('and press "space" to select it', 450, 280);
+
         if(keyPressed[83]) {
             if(menuTimer === 0) {
                 menuSelected = (menuSelected + 1)%l;
@@ -419,30 +441,73 @@ window.rAF = (function() {
         }
 
         if(keyPressed[32]) {
-            currentState = menuSelected + 1;
+            if(allowPress) {
+                currentState = menuSelected + 1;
+                allowPress = false;
+            }
+        } else {
+            allowPress = true;
         }
+    }
+
+    function gameOverUpdateAndRender() {
+        var i = 0,
+            l = 0;
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#FFF';
         ctx.font = '50px Courier New';
-        ctx.fillText('Hsur', 20, 60);
+        ctx.fillText('GAME OVER', 20, 60);
         ctx.font = '25px Courier New';
-        for(i = 0; i < l; i++) {
-            if(menuSelected === i) {
-                ctx.fillStyle = '#00C';
-                ctx.fillRect(20, 114 + i*30, 16, 16);
-                ctx.fillStyle = '#FF0';
-            } else {
-                ctx.fillStyle = '#FFF';
-            }
-            ctx.fillText(menu[i], 50, 130 + i*30);
-        }
-        ctx.fillStyle = '#FFF';
+        ctx.fillText('Kills:       ' + score, 50, 130);
+        ctx.fillText('Distance:    ' + Math.floor(distance/10), 50, 160);
+        ctx.fillText('Final Score: ' + (1 + score) * Math.floor(distance/10), 50, 190);
         ctx.font = '18px Courier New';
-        ctx.fillText('Press "W/S" to change options', 450, 260);
-        ctx.fillText('and press "space" for select it', 450, 280);
+        ctx.fillText('Press "space" to restart', 500, 280);
+
+        if(keyPressed[32]) {
+            if(allowPress) {
+                currentState = 0;
+                allowPress   = false;
+                menuTimer     = 0;
+                worldOffsetX  = 0;
+                currentHeight = 0;
+                fireCount     = 0;
+                generateWorld();
+                resetPool(bullets);
+                resetPool(enemies);
+                resetPool(enemyBullets);
+                distance      = 0;
+                score         = 0;
+                enemyRate     = 1;
+                enemyCount    = 0;
+                player.x = 0;
+                player.y = 32;
+                player.hp = 3;
+                player.fr = 2;
+            }
+        } else {
+            allowPress = true;
+        }
     }
 
+    function resetPool(pool) {
+        var i = 0,
+            l = pool.length;
+        for(; i < l; i++) {
+            pool[i].alive = false;
+        }
+    }
+
+    //Generate World
+    function generateWorld() {
+        var i;
+        world[0] = 32;
+        world[1] = 32;
+        for(i = 2; i < 26; i++) {
+            generatePlatform(i);
+        }
+    }
     //For generating the map
     function generatePlatform(i) {
         var r = Math.random();
