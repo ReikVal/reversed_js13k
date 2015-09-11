@@ -22,6 +22,8 @@ window.rAF = (function() {
         bullets       = [],
         enemies       = [],
         enemyBullets  = [],
+        distance      = 10000,
+        score         = 9,
         enemyRate     = 1,
         enemyCount    = 0,
         animation     = 0,
@@ -129,15 +131,16 @@ window.rAF = (function() {
                 }
                 //Checking bullets
                 for(j = 0, m = bullets.length; j < m; j++) {
-                    if(Math.abs(enemies[i].x + 8 - bullets[j].x) <= 16 && Math.abs(enemies[i].y + 4 - bullets[j].y) <= 16) {
+                    if(bullets[j].alive && Math.abs(enemies[i].x + 8 - bullets[j].x) <= 16 && Math.abs(enemies[i].y + 4 - bullets[j].y) <= 16) {
                         enemies[i].alive = false;
                         bullets[j].alive = false;
+                        score++;
                     }
                 }
 
                 //Firing
                 ++enemies[i].fireCount;
-                if(enemies[i].fireCount === 90) {
+                if(enemies[i].fireCount === 75) {
                     enemies[i].fireCount = 0;
                     for(j = 0, m = enemyBullets.length, generated = false; j < m && !generated; j++) {
                         if(!enemyBullets[j].alive) {
@@ -170,7 +173,7 @@ window.rAF = (function() {
 
         //Enemy bullets collisions
         for(j = 0, m = enemyBullets.length; j < m; j++) {
-            if(Math.abs(player.x + 8 - enemyBullets[j].x) <= 8 && Math.abs(player.y + 8 - enemyBullets[j].y) <= 8 && !player.imaamunity) {
+            if(enemyBullets[j].alive && Math.abs(player.x + 8 - enemyBullets[j].x) <= 8 && Math.abs(player.y + 8 - enemyBullets[j].y) <= 8 && !player.immunity) {
                 player.immunity = true;
                 player.hp--;
                 enemyBullets[j].alive = false;
@@ -206,6 +209,11 @@ window.rAF = (function() {
         //Generating map and scrolling.
         if(player.x > 500) {
             worldOffsetX += player.x - 500;
+            distance += player.x - 500;
+            if(distance % 5000 <= 20) {
+                enemyRate = 1 + Math.floor(distance/5000)/2;
+            }
+
             player.x = 500;
             if(worldOffsetX >= 32) {
                 worldOffsetX %= 32;
@@ -215,6 +223,9 @@ window.rAF = (function() {
         }
 
         //Fire update
+        if(distance >= (player.fr - 2) * 10000 && score >= Math.floor(distance/1000)) {
+            player.fr++;
+        }
         for(i = 0, l = bullets.length; i < l; i++) {
             if(bullets[i].alive) {
                 bullets[i].x += bullets[i].vx;
@@ -281,7 +292,7 @@ window.rAF = (function() {
             if(!generated) {
                 enemies.push({
                     x: 800,
-                    y: (320 - M) * Math.random() + M + 8,
+                    y: (308 - M) * Math.random() + M + 8,
                     v: 1 + Math.random() * 5,
                     alive: true,
                     fireCount: 0
@@ -354,6 +365,11 @@ window.rAF = (function() {
             ctx.fillRect(740+20*i, 300, 16, 16);
         }
         ctx.fillText('Fire ratio: ' + player.fr, 5, 314);
+        ctx.fillText('Distance:   ' + Math.floor(distance/10), 5, 300);
+        ctx.fillText('Kills:      ' + score, 5, 286);
+        if(player.immunity && animation % 10 !== 0) {
+            ctx.fillText('IMMUNE', 700, 300);
+        }
     }
 
     //For generating the map
