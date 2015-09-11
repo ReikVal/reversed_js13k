@@ -12,7 +12,7 @@ window.rAF = (function() {
 
     var canvas        = document.getElementById('game'),
         ctx           = canvas.getContext('2d'),
-        currentState  = 9,
+        currentState  = 0,
         menu          = ['Play', 'Instructions', 'Story'],
         menuSelected  = 0,
         menuTimer     = 0,
@@ -74,9 +74,11 @@ window.rAF = (function() {
                 break;
             case 2:
                 //Instructions
+                instructionsUpdateAndRender();
                 break;
             case 3:
                 //Story state
+                storyUpdateAndRender();
                 break;
             case 9:
                 //Game Over State
@@ -443,6 +445,63 @@ window.rAF = (function() {
         if(keyPressed[32]) {
             if(allowPress) {
                 currentState = menuSelected + 1;
+                allowPress = false;
+            }
+        } else {
+            allowPress = true;
+        }
+    }
+
+    function instructionsUpdateAndRender() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFF';
+        ctx.font = '50px Courier New';
+        ctx.fillText('Instructions', 20, 60);
+        ctx.font = '18px Courier New';
+        ctx.fillText('Movement:', 50, 90);
+        ctx.font = '15px Courier New';
+        ctx.fillText('Use W and D for moving to left and right.', 70, 105);
+        ctx.fillText('Use "space" for jumping.', 70, 120);
+        ctx.fillText('Run to the right to increment your distance score.', 70, 135);
+        ctx.font = '18px Courier New';
+        ctx.fillText('Shooting:', 50, 160);
+        ctx.font = '15px Courier New';
+        ctx.fillText('Use "arrow keys" for shooting in that direction.', 70, 180);
+        ctx.fillText('Hit the enemies with the bullets to increment your kill score.', 70, 195);
+        ctx.fillText('Your fire ratio is the number of bullets per second and it', 70, 210);
+        ctx.fillText('is incremented by 1 for every 10 kills and 1000 distance score.', 70, 225);
+        ctx.font = '18px Courier New';
+        ctx.fillText('Defeat:', 50, 250);
+        ctx.font = '15px Courier New';
+        ctx.fillText('Green bullets and enemies kill you.', 70, 270);
+        ctx.fillText('You are immune when hit for a sort period.', 70, 285);
+        ctx.fillText('Your final score is: Distance * (1 + Kills).', 70, 300);
+        ctx.font = '18px Courier New';
+        ctx.fillText('Press "space" to exit', 530, 280);
+
+        if(keyPressed[32]) {
+            if(allowPress) {
+                currentState = 0;
+                allowPress = false;
+            }
+        } else {
+            allowPress = true;
+        }
+    }
+
+    function storyUpdateAndRender() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFF';
+        ctx.font = '50px Courier New';
+        ctx.fillText('Story', 20, 60);
+        ctx.font = '18px Courier New';
+        ctx.fillText('Press "space" to exit', 530, 280);
+
+        if(keyPressed[32]) {
+            if(allowPress) {
+                currentState = 0;
                 allowPress = false;
             }
         } else {
