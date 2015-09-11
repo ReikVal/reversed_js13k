@@ -21,6 +21,7 @@ window.rAF = (function() {
         fireAllowed   = true,
         bullets       = [],
         enemies       = [],
+        enemyBullets  = [],
         enemyRate     = 1,
         enemyCount    = 0,
         animation     = 0,
@@ -60,7 +61,6 @@ window.rAF = (function() {
 
     function loop() {
         processInput();
-        //TODO: Make constant fps
         update();
         render();
         window.rAF(loop);
@@ -105,6 +105,8 @@ window.rAF = (function() {
             j         = 0,
             m         = 0,
             M         = 0,
+            dx        = 0,
+            dy        = 0,
             generated = false,
             vel       = 0;
 
@@ -119,18 +121,59 @@ window.rAF = (function() {
 
         for(i = 0, l = enemies.length; i < l; i++) {
             if(enemies[i].alive){
+                //Checking player
                 if(Math.abs(enemies[i].x - player.x) <= 16 && Math.abs(enemies[i].y - player.y) <= 16 && !player.immunity) {
                     player.immunity = true;
                     player.hp--;
                     enemies[i].alive = false;
                 }
-
+                //Checking bullets
                 for(j = 0, m = bullets.length; j < m; j++) {
                     if(Math.abs(enemies[i].x + 8 - bullets[j].x) <= 16 && Math.abs(enemies[i].y + 4 - bullets[j].y) <= 16) {
                         enemies[i].alive = false;
                         bullets[j].alive = false;
                     }
                 }
+
+                //Firing
+                ++enemies[i].fireCount;
+                if(enemies[i].fireCount === 90) {
+                    enemies[i].fireCount = 0;
+                    for(j = 0, m = enemyBullets.length, generated = false; j < m && !generated; j++) {
+                        if(!enemyBullets[j].alive) {
+                            enemyBullets[j].x = enemies[i].x;
+                            enemyBullets[j].y = enemies[i].y;
+                            enemyBullets[j].fd.x = player.x - enemies[i].x;
+                            enemyBullets[j].fd.y = player.y - enemies[i].y;
+                            enemyBullets[j].fv = 1/Math.sqrt(enemyBullets[j].fd.x*enemyBullets[j].fd.x + enemyBullets[j].fd.y*enemyBullets[j].fd.y);
+                            enemyBullets[j].alive = true;
+                            generated = true;
+                        }
+                    }
+                    if(!generated) {
+                        dx = player.x - enemies[i].x;
+                        dy = player.y - enemies[i].y;
+                        enemyBullets.push({
+                            x: enemies[i].x,
+                            y: enemies[i].y,
+                            fd: {
+                                x: dx,
+                                y: dy
+                            },
+                            fv: 1/Math.sqrt(dx*dx + dy*dy),
+                            alive: true
+                        });
+                    }
+                }
+            }
+        }
+
+        //Enemy bullets collisions
+        for(j = 0, m = enemyBullets.length; j < m; j++) {
+            if(Math.abs(player.x + 8 - enemyBullets[j].x) <= 8 && Math.abs(player.y + 8 - enemyBullets[j].y) <= 8 && !player.imaamunity) {
+                player.immunity = true;
+                player.hp--;
+                enemyBullets[i].alive = false;
             }
         }
 
@@ -180,6 +223,14 @@ window.rAF = (function() {
             }
         }
 
+        for(i = 0, l = enemyBullets.length; i < l; i++) {
+            if(enemyBullets[i].alive) {
+                enemyBullets[i].x += 5*enemyBullets[i].fd.x*enemyBullets[i].fv;
+                enemyBullets[i].y += 5*enemyBullets[i].fd.y*enemyBullets[i].fv;
+                enemyBullets[i].alive = enemyBullets[i].x >= 0 && enemyBullets[i].x <= canvas.width && enemyBullets[i].y >= 0 && enemyBullets[i].y <= canvas.height;
+            }
+        }
+
         if(!fireAllowed) {
             fireCount = (fireCount + 1)%(60/player.fr);
             if(!fireCount) {
@@ -223,6 +274,7 @@ window.rAF = (function() {
                     enemies[i].y = (308 - M) * Math.random() + M + 8;
                     enemies[i].v = 1 + Math.random() * 5;
                     enemies[i].alive = true;
+                    enemies[i].fireCount = 0;
                     generated = true;
                 }
             }
@@ -231,7 +283,8 @@ window.rAF = (function() {
                     x: 800,
                     y: (320 - M) * Math.random() + M + 8,
                     v: 1 + Math.random() * 5,
-                    alive: true
+                    alive: true,
+                    fireCount: 0
                 });
             }
         }
@@ -258,7 +311,14 @@ window.rAF = (function() {
         ctx.fillStyle = '#FF0';
         for(i = 0; i < l; i++) {
             if(bullets[i].alive) {
-                ctx.fillRect(bullets[i].x - 2, bullets[i].y - 1, 5, 5);
+                ctx.fillRect(bullets[i].x - 2, bullets[i].y - 2, 5, 5);
+            }
+        }
+        //Bullets rendering
+        ctx.fillStyle = '#0F0';
+        for(i = 0, l = enemyBullets.length; i < l; i++) {
+            if(enemyBullets[i].alive) {
+                ctx.fillRect(enemyBullets[i].x - 2, enemyBullets[i].y - 2, 5, 5);
             }
         }
 
