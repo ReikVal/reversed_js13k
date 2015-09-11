@@ -12,6 +12,11 @@ window.rAF = (function() {
 
     var canvas        = document.getElementById('game'),
         ctx           = canvas.getContext('2d'),
+        currentState  = 0,
+        menu          = ['Play', 'Instructions', 'Story'],
+        menuSelected  = 0,
+        timerMenu     = 0,
+        menuTimer     = 0,
         keyPressed    = {},
         world         = [],
         worldOffsetX  = 0,
@@ -27,14 +32,14 @@ window.rAF = (function() {
         enemyRate     = 1,
         enemyCount    = 0,
         animation     = 0,
-        keysForUse    = [65, 68, 32, 37, 38, 39, 40],
+        keysForUse    = [83, 87, 65, 68, 32, 37, 38, 39, 40],
         player        = {
             x: 0,
             y: 32,
             vx: 0,
             vy: 0,
             hp: 3,
-            fr: 3,
+            fr: 2,
             fd: {
                 x: 0,
                 y: 0
@@ -62,9 +67,26 @@ window.rAF = (function() {
     }
 
     function loop() {
-        processInput();
-        update();
-        render();
+        switch(currentState) {
+            case 0:
+                //Menu State
+                menuUpdateAndRender();
+                break;
+            case 1:
+                //Game State
+                processInput();
+                update();
+                render();
+                break;
+            case 2:
+                //Instructions
+                break;
+            case 3:
+                //Story state
+                break;
+            case 9:
+                //Game Over State
+        }
         window.rAF(loop);
     }
 
@@ -223,7 +245,7 @@ window.rAF = (function() {
         }
 
         //Fire update
-        if(distance >= (player.fr - 2) * 10000 && score >= Math.floor(distance/1000)) {
+        if(distance >= (player.fr - 1) * 10000 && score >= Math.floor(distance/1000)) {
             player.fr++;
         }
         for(i = 0, l = bullets.length; i < l; i++) {
@@ -370,6 +392,55 @@ window.rAF = (function() {
         if(player.immunity && animation % 10 !== 0) {
             ctx.fillText('IMMUNE', 700, 284);
         }
+    }
+
+    function menuUpdateAndRender() {
+        var i = 0,
+            l = menu.length;
+        if(keyPressed[83]) {
+            if(menuTimer === 0) {
+                menuSelected = (menuSelected + 1)%l;
+            }
+            if(++menuTimer === 30) {
+                menuTimer = 0;
+            }
+        } else if(keyPressed[87]) {
+            if(menuTimer === 0) {
+                menuSelected--;
+                if(menuSelected === -1) {
+                    menuSelected = l-1;
+                }
+            }
+            if(++menuTimer === 30) {
+                menuTimer = 0;
+            }
+        } else {
+            menuTimer = 0;
+        }
+
+        if(keyPressed[32]) {
+            currentState = menuSelected + 1;
+        }
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFF';
+        ctx.font = '50px Courier New';
+        ctx.fillText('Hsur', 20, 60);
+        ctx.font = '25px Courier New';
+        for(i = 0; i < l; i++) {
+            if(menuSelected === i) {
+                ctx.fillStyle = '#00C';
+                ctx.fillRect(20, 114 + i*30, 16, 16);
+                ctx.fillStyle = '#FF0';
+            } else {
+                ctx.fillStyle = '#FFF';
+            }
+            ctx.fillText(menu[i], 50, 130 + i*30);
+        }
+        ctx.fillStyle = '#FFF';
+        ctx.font = '18px Courier New';
+        ctx.fillText('Press "W/S" to change options', 450, 260);
+        ctx.fillText('and press "space" for select it', 450, 280);
     }
 
     //For generating the map
