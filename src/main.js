@@ -58,22 +58,22 @@ window.rAF = (function() {
         numberOfJumps    = 0,
         achievements     = {
             noShoot: {
-                text: 'Get 2500 distance without shooting.',
+                text: 'Get 1250 distance without shooting.',
                 achieveThisRun: false,
                 achieve: false
             },
             noScrolling: {
-                text: 'Get 25 kills without scrolling.',
+                text: 'Get 15 kills without scrolling.',
                 achieveThisRun: false,
                 achieve: false
             },
             kills: {
-                text: 'Get 100 kills at least with 50000 distance.',
+                text: 'Get 30 kills at least with 10000 distance.',
                 achieveThisRun: false,
                 achieve: false
             },
             jumps: {
-                text: 'Jump 200 times at least with 50000 distance.',
+                text: 'Jump 100 times at least with 10000 distance.',
                 achieveThisRun: false,
                 achieve: false
             },
@@ -377,23 +377,23 @@ window.rAF = (function() {
         }
 
         //Achievements check
-        if(distanceNoShoot >= 25000 && !achievements.noShoot.achieveThisRun) {
+        if(distanceNoShoot >= 12500 && !achievements.noShoot.achieveThisRun) {
             achievements.achieveThisRun++;
             achievements.noShoot.achieveThisRun = true;
             achievements.noShoot.achieve = true;
         }
-        if(killsNoScrolling >= 25 && !achievements.noScrolling.achieveThisRun) {
+        if(killsNoScrolling >= 15 && !achievements.noScrolling.achieveThisRun) {
             achievements.achieveThisRun++;
             achievements.noScrolling.achieveThisRun = true;
             achievements.noScrolling.achieve = true;
         }
-        if(distance >= 500000) {
-            if(score >= 100 && !achievements.kills.achieveThisRun) {
+        if(distance >= 100000) {
+            if(score >= 30 && !achievements.kills.achieveThisRun) {
                 achievements.achieveThisRun++;
                 achievements.kills.achieveThisRun = true;
                 achievements.kills.achieve = true;
             }
-            if(numberOfJumps >= 200 && !achievements.jumps.achieveThisRun) {
+            if(numberOfJumps >= 100 && !achievements.jumps.achieveThisRun) {
                 achievements.achieveThisRun++;
                 achievements.jumps.achieveThisRun = true;
                 achievements.jumps.achieve = true;
@@ -560,7 +560,7 @@ window.rAF = (function() {
         ctx.fillText('Defeat:', 50, 250);
         ctx.font = '15px Courier New';
         ctx.fillText('Green bullets and enemies kill you.', 70, 270);
-        ctx.fillText('You are immune when hit for a sort period.', 70, 285);
+        ctx.fillText('You are immune when hit for a short period.', 70, 285);
         ctx.fillText('Your final score is: Distance * (1 + Kills).', 70, 300);
         ctx.font = '18px Courier New';
         ctx.fillText('Press "space" to exit', 530, 280);
