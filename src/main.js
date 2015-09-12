@@ -65,7 +65,7 @@ window.rAF = (function() {
             noScrolling: {
                 text: 'Get 25 kills without scrolling.',
                 achieveThisRun: false,
-                achieve: falsea
+                achieve: false
             },
             kills: {
                 text: 'Get 100 kills at least with 50000 distance.',
