@@ -65,7 +65,7 @@ window.rAF = (function() {
             noScrolling: {
                 text: 'Get 25 kills without scrolling.',
                 achieveThisRun: false,
-                achieve: false
+                achieve: falsea
             },
             kills: {
                 text: 'Get 100 kills at least with 50000 distance.',
@@ -665,23 +665,23 @@ window.rAF = (function() {
         ctx.fillText('Final Score: ' + (1 + score) * Math.floor(distance/10), 50, 190);
         ctx.fillText('Achievements this run:', 360, 90);
         ctx.font = '15px Courier New';
-        if(achievements.noShoot.achieve) {
+        if(achievements.noShoot.achieveThisRun) {
             i++;
             ctx.fillText('-' + achievements.noShoot.text, 380, 100 + i*20);
         }
-        if(achievements.noScrolling.achieve) {
+        if(achievements.noScrolling.achieveThisRun) {
             i++;
             ctx.fillText('-' + achievements.noScrolling.text, 380, 100 + i*20);
         }
-        if(achievements.kills.achieve) {
+        if(achievements.kills.achieveThisRun) {
             i++;
             ctx.fillText('-' + achievements.kills.text, 380, 100 + i*20);
         }
-        if(achievements.jumps.achieve) {
+        if(achievements.jumps.achieveThisRun) {
             i++;
             ctx.fillText('-' + achievements.jumps.text, 380, 100 + i*20);
         }
-        if(achievements.all.achieve) {
+        if(achievements.all.achieveThisRun) {
             i++;
             ctx.fillText('-' + achievements.all.text, 380, 100 + i*20);
         }
