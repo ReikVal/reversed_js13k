@@ -1,6 +1,4 @@
-# reversed_js13k
-
-HSUR:
+# HSUR
 
 Game for JS13K 2015.
 
