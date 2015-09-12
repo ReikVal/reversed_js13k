@@ -52,6 +52,38 @@ window.rAF = (function() {
                 ctx.fillRect(this.x, this.y, 16, 16);
             }
         };
+    //Achievements
+    var killsNoScrolling = 0,
+        distanceNoShoot  = 0,
+        numberOfJumps    = 0,
+        achievements     = {
+            noShoot: {
+                text: 'Get 2500 distance without shooting.',
+                achieveThisRun: false,
+                achieve: false
+            },
+            noScrolling: {
+                text: 'Get 25 kills without scrolling.',
+                achieveThisRun: false,
+                achieve: false
+            },
+            kills: {
+                text: 'Get 100 kills at least with 50000 distance.',
+                achieveThisRun: false,
+                achieve: false
+            },
+            jumps: {
+                text: 'Jump 200 times at least with 50000 distance.',
+                achieveThisRun: false,
+                achieve: false
+            },
+            all: {
+                text: 'Get all achievements in the same run.',
+                achieveThisRun: false,
+                achieve: false
+            },
+            achieveThisRun: 0
+        };
 
     function init() {
         //Generating the world
@@ -100,6 +132,7 @@ window.rAF = (function() {
         if(keyPressed[32] && !player.jumping) {
             player.jumping = true;
             player.vy = 12;
+            numberOfJumps++;
         }
 
         //Firing
@@ -139,7 +172,6 @@ window.rAF = (function() {
                 player.immunity = false;
             }
         }
-
         for(i = 0, l = enemies.length; i < l; i++) {
             if(enemies[i].alive){
                 //Checking player
@@ -154,6 +186,7 @@ window.rAF = (function() {
                         enemies[i].alive = false;
                         bullets[j].alive = false;
                         score++;
+                        killsNoScrolling++;
                     }
                 }
 
@@ -235,6 +268,8 @@ window.rAF = (function() {
         if(player.x > 500) {
             worldOffsetX += player.x - 500;
             distance += player.x - 500;
+            distanceNoShoot += player.x - 500;
+            killsNoScrolling = 0;
             if(distance % 5000 <= 20) {
                 enemyRate = 1 + Math.floor(distance/5000)/2;
             }
@@ -277,6 +312,7 @@ window.rAF = (function() {
         //Fire generation
         if(fireAllowed && (player.fd.x !== 0 || player.fd.y !== 0)) {
             fireAllowed = false;
+            distanceNoShoot = 0;
             vel = 1/Math.sqrt(player.fd.x*player.fd.x + player.fd.y*player.fd.y);
             for(i = 0, l = bullets.length; i < l && !generated; i++) {
                 if(!bullets[i].alive) {
@@ -336,6 +372,34 @@ window.rAF = (function() {
             }
         }
 
+        //Achievements check
+        if(distanceNoShoot >= 25000 && !achievements.noShoot.achieveThisRun) {
+            achievements.achieveThisRun++;
+            achievements.noShoot.achieveThisRun = true;
+            achievements.noShoot.achieve = true;
+        }
+        if(killsNoScrolling >= 25 && !achievements.noScrolling.achieveThisRun) {
+            achievements.achieveThisRun++;
+            achievements.noScrolling.achieveThisRun = true;
+            achievements.noScrolling.achieve = true;
+        }
+        if(distance >= 500000) {
+            if(score >= 100 && !achievements.kills.achieveThisRun) {
+                achievements.achieveThisRun++;
+                achievements.kills.achieveThisRun = true;
+                achievements.kills.achieve = true;
+            }
+            if(numberOfJumps >= 200 && !achievements.jumps.achieveThisRun) {
+                achievements.achieveThisRun++;
+                achievements.jumps.achieveThisRun = true;
+                achievements.jumps.achieve = true;
+            }
+            if(achievements.achieveThisRun === 4) {
+                achievements.achieveThisRun++;
+                achievements.all.achieveThisRun = true;
+                achievements.all.achieve = true;
+            }
+        }
     }
     function render() {
         var i = 0,
@@ -552,6 +616,15 @@ window.rAF = (function() {
                 player.y = 32;
                 player.hp = 3;
                 player.fr = 2;
+                killsNoScrolling = 0;
+                distanceNoShoot  = 0;
+                numberOfJumps    = 0;
+                achievements.achieveThisRun = 0;
+                achievements.noShoot.achieveThisRun = false;
+                achievements.noScrolling.achieveThisRun = false;
+                achievements.kills.achieveThisRun = false;
+                achievements.jumps.achieveThisRun = false;
+                achievements.all.achieveThisRun = false;
             }
         } else {
             allowPress = true;
