@@ -13,7 +13,7 @@ window.rAF = (function() {
     var canvas        = document.getElementById('game'),
         ctx           = canvas.getContext('2d'),
         currentState  = 0,
-        menu          = ['Play', 'Instructions', 'Story'],
+        menu          = ['Play', 'Instructions', 'Story', 'Achievements'],
         menuSelected  = 0,
         menuTimer     = 0,
         allowPress    = true,
@@ -111,6 +111,10 @@ window.rAF = (function() {
             case 3:
                 //Story state
                 storyUpdateAndRender();
+                break;
+            case 4:
+                //Achievements
+                achievementsUpdateAndRender();
                 break;
             case 9:
                 //Game Over State
@@ -459,6 +463,23 @@ window.rAF = (function() {
         if(player.immunity && animation % 10 !== 0) {
             ctx.fillText('IMMUNE', 700, 284);
         }
+        ctx.fillText('Achievements:', 300, 314);
+
+        if(achievements.noShoot.achieveThisRun) {
+            ctx.fillRect(450, 302, 12, 12);
+        }
+        if(achievements.noScrolling.achieveThisRun) {
+            ctx.fillRect(465, 302, 12, 12);
+        }
+        if(achievements.kills.achieveThisRun) {
+            ctx.fillRect(480, 302, 12, 12);
+        }
+        if(achievements.jumps.achieveThisRun) {
+            ctx.fillRect(495, 302, 12, 12);
+        }
+        if(achievements.all.achieveThisRun) {
+            ctx.fillRect(510, 302, 12, 12);
+        }
     }
 
     function menuUpdateAndRender() {
@@ -581,9 +602,58 @@ window.rAF = (function() {
         }
     }
 
+    function achievementsUpdateAndRender() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFF';
+        ctx.font = '50px Courier New';
+        ctx.fillText('Achievements', 20, 60);
+        ctx.font = '18px Courier New';
+        if(achievements.noShoot.achieve) {
+            ctx.fillStyle = '#FF0';
+        } else {
+            ctx.fillStyle = '#FFF';
+        }
+        ctx.fillText('-' + achievements.noShoot.text, 50, 100);
+        if(achievements.noScrolling.achieve) {
+            ctx.fillStyle = '#FF0';
+        } else {
+            ctx.fillStyle = '#FFF';
+        }
+        ctx.fillText('-' + achievements.noScrolling.text, 50, 120);
+        if(achievements.kills.achieve) {
+            ctx.fillStyle = '#FF0';
+        } else {
+            ctx.fillStyle = '#FFF';
+        }
+        ctx.fillText('-' + achievements.kills.text, 50, 140);
+        if(achievements.jumps.achieve) {
+            ctx.fillStyle = '#FF0';
+        } else {
+            ctx.fillStyle = '#FFF';
+        }
+        ctx.fillText('-' + achievements.jumps.text, 50, 160);
+        if(achievements.all.achieve) {
+            ctx.fillStyle = '#FF0';
+        } else {
+            ctx.fillStyle = '#FFF';
+        }
+        ctx.fillText('-' + achievements.all.text, 50, 180);
+        ctx.fillStyle = '#FFF';
+        ctx.fillText('Press "space" to exit', 530, 280);
+
+        if(keyPressed[32]) {
+            if(allowPress) {
+                currentState = 0;
+                allowPress = false;
+            }
+        } else {
+            allowPress = true;
+        }
+    }
+
     function gameOverUpdateAndRender() {
-        var i = 0,
-            l = 0;
+        var i = 0;
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#FFF';
@@ -593,6 +663,29 @@ window.rAF = (function() {
         ctx.fillText('Kills:       ' + score, 50, 130);
         ctx.fillText('Distance:    ' + Math.floor(distance/10), 50, 160);
         ctx.fillText('Final Score: ' + (1 + score) * Math.floor(distance/10), 50, 190);
+        ctx.fillText('Achievements this run:', 360, 90);
+        ctx.font = '15px Courier New';
+        if(achievements.noShoot.achieve) {
+            i++;
+            ctx.fillText('-' + achievements.noShoot.text, 380, 100 + i*20);
+        }
+        if(achievements.noScrolling.achieve) {
+            i++;
+            ctx.fillText('-' + achievements.noScrolling.text, 380, 100 + i*20);
+        }
+        if(achievements.kills.achieve) {
+            i++;
+            ctx.fillText('-' + achievements.kills.text, 380, 100 + i*20);
+        }
+        if(achievements.jumps.achieve) {
+            i++;
+            ctx.fillText('-' + achievements.jumps.text, 380, 100 + i*20);
+        }
+        if(achievements.all.achieve) {
+            i++;
+            ctx.fillText('-' + achievements.all.text, 380, 100 + i*20);
+        }
+
         ctx.font = '18px Courier New';
         ctx.fillText('Press "space" to restart', 500, 280);
 
