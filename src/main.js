@@ -248,7 +248,7 @@ window.rAF = (function() {
         }
 
         //Fire update
-        if(distance >= (player.fr - 1) * 10000 && score >= Math.floor(distance/1000)) {
+        if(distance >= (player.fr - 1) * 10000 && score >= (player.fr - 1) * 10) {
             player.fr++;
         }
         for(i = 0, l = bullets.length; i < l; i++) {
@@ -497,6 +497,14 @@ window.rAF = (function() {
         ctx.font = '50px Courier New';
         ctx.fillText('Story', 20, 60);
         ctx.font = '18px Courier New';
+        ctx.fillText('Year 2342:', 50, 85);
+        ctx.font = '15px Courier New';
+        ctx.fillText('Aliens from the planet Hsur are invading the Earth, but, space soldiers like you', 70, 105);
+        ctx.fillText('are defending it.', 70, 120);
+        ctx.fillText('Armed with your antigravitational device and your pulse gun you rush the bottom', 70, 160);
+        ctx.fillText('of the mother ship.', 70, 175);
+        ctx.fillText('Hsur is a hard enemy, their battleships are going to destroy you...', 70, 215);
+        ctx.fillText('...sooner or later. Good luck and try to save the Earth!', 70, 250);
         ctx.fillText('Press "space" to exit', 530, 280);
 
         if(keyPressed[32]) {
